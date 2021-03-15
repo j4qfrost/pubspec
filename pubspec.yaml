@@ -1,5 +1,5 @@
 name: pubspec
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/j4qfrost/pubspec
 description: This version is a place holder until pubspec is published with nnbd support. A library for manipulating [pubspec](https://www.dartlang.org/tools/pub/pubspec.html) files
 environment: 
