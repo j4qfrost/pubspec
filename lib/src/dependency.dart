@@ -10,8 +10,8 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'json_utils.dart';
 
-abstract class DependencyReference extends Jsonable {
-  DependencyReference();
+abstract class DependencyReference implements Jsonable {
+  const DependencyReference();
 
   factory DependencyReference.fromJson(json) {
     if (json is Map) {
@@ -47,7 +47,7 @@ class GitReference extends DependencyReference {
   final String? ref;
   final String? path;
 
-  GitReference(this.url, [this.ref, this.path]);
+  const GitReference(this.url, [this.ref, this.path]);
 
   factory GitReference.fromJson(Map json) {
     final git = json['git'];
@@ -84,7 +84,7 @@ class GitReference extends DependencyReference {
 class PathReference extends DependencyReference {
   final String? path;
 
-  PathReference(this.path);
+  const PathReference(this.path);
 
   PathReference.fromJson(Map json) : this(json['path']);
 
@@ -99,7 +99,7 @@ class PathReference extends DependencyReference {
 class HostedReference extends DependencyReference {
   final VersionConstraint versionConstraint;
 
-  HostedReference(this.versionConstraint);
+  const HostedReference(this.versionConstraint);
 
   HostedReference.fromJson(String json) : this(VersionConstraint.parse(json));
 
@@ -137,7 +137,7 @@ class ExternalHostedReference extends DependencyReference {
 class SdkReference extends DependencyReference {
   final String? sdk;
 
-  SdkReference(this.sdk);
+  const SdkReference(this.sdk);
 
   SdkReference.fromJson(Map json) : this(json['sdk']);
 
