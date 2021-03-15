@@ -1,6 +1,6 @@
 # 1.0.0
 Change the sdk constraint according to the guide lines.
-renamed pubspec.dart to pubspec2.dart
+renamed pubspec.dart to pubspec.dart
 
 # 1.0.0
 Temporary release until real pubspec becomes nnbd ready.
