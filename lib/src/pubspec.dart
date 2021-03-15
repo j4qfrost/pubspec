@@ -113,28 +113,29 @@ class PubSpec implements Jsonable {
       PubSpec.fromJson(loadYaml(yamlString));
 
   /// loads the pubspec from the [projectDirectory]
-  static Future<PubSpec> load(Directory projectDirectory) async =>
-      await loadFile(p.join(projectDirectory.path, 'pubspec.yaml'));
+  static Future<PubSpec> load(Directory projectDirectory) =>
+      loadFile(p.join(projectDirectory.path, 'pubspec.yaml'));
 
   /// loads the pubspec from the [file]
   static Future<PubSpec> loadFile(String file) async =>
       PubSpec.fromJson(loadYaml(await File(file).readAsString()));
 
   /// creates a copy of the pubspec with the changes provided
-  PubSpec copy(
-      {String? name,
-      String? author,
-      Version? version,
-      String? homepage,
-      String? documentation,
-      String? description,
-      Uri? publishTo,
-      Environment? environment,
-      Map<String, DependencyReference>? dependencies,
-      Map<String, DependencyReference>? devDependencies,
-      Map<String, DependencyReference>? dependencyOverrides,
-      Map<String, Executable>? executables,
-      Map? unParsedYaml}) {
+  PubSpec copy({
+    String? name,
+    String? author,
+    Version? version,
+    String? homepage,
+    String? documentation,
+    String? description,
+    Uri? publishTo,
+    Environment? environment,
+    Map<String, DependencyReference>? dependencies,
+    Map<String, DependencyReference>? devDependencies,
+    Map<String, DependencyReference>? dependencyOverrides,
+    Map<String, Executable>? executables,
+    Map? unParsedYaml,
+  }) {
     return PubSpec(
         name: name ?? this.name,
         author: author ?? this.author,

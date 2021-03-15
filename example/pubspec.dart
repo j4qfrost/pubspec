@@ -6,14 +6,14 @@ import 'package:pubspec2/pubspec2.dart';
 
 main() async {
   // specify the directory
-  var myDirectory = new Directory('myDir');;
+  var myDirectory = Directory('myDir');
+  ;
 
   // load pubSpec
   var pubSpec = await PubSpec.load(myDirectory);
 
   // change the dependencies to a single path dependency on project 'foo'
-  var newPubSpec = pubSpec.copy(
-      dependencies: { 'foo': new PathReference('../foo')});
+  var newPubSpec = pubSpec.copy(dependencies: {'foo': PathReference('../foo')});
 
   // save it
   await newPubSpec.save(myDirectory);

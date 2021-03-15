@@ -14,7 +14,7 @@ executables:
   useful-script:
   dcli_install: dcliinstall
 ''';
-    var p = new PubSpec.fromYamlString(pubspecString);
+    var p = PubSpec.fromYamlString(pubspecString);
     var exec = p.executables['dcli_install']!;
     expect(exec, TypeMatcher<Executable>());
     //expect(exec.name, equals('dcli_install'));

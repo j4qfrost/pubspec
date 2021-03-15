@@ -16,26 +16,26 @@ abstract class DependencyReference extends Jsonable {
   factory DependencyReference.fromJson(json) {
     if (json is Map) {
       if (json.length != 1) {
-        throw new StateError('expecting only one entry for dependency');
+        throw StateError('expecting only one entry for dependency');
       }
       switch (json.keys.first as String) {
         case 'path':
-          return new PathReference.fromJson(json);
+          return PathReference.fromJson(json);
         case 'git':
-          return new GitReference.fromJson(json);
+          return GitReference.fromJson(json);
         case 'hosted':
-          return new ExternalHostedReference.fromJson(json);
+          return ExternalHostedReference.fromJson(json);
         case 'sdk':
-          return new SdkReference.fromJson(json);
+          return SdkReference.fromJson(json);
         default:
-          throw new StateError('unexpected dependency type ${json.keys.first}');
+          throw StateError('unexpected dependency type ${json.keys.first}');
       }
     } else if (json is String) {
-      return new HostedReference.fromJson(json);
+      return HostedReference.fromJson(json);
     } else if (json == null) {
-      return new HostedReference(VersionConstraint.any);
+      return HostedReference(VersionConstraint.any);
     } else {
-      throw new StateError('Unable to parse dependency $json');
+      throw StateError('Unable to parse dependency $json');
     }
   }
 
@@ -52,12 +52,12 @@ class GitReference extends DependencyReference {
   factory GitReference.fromJson(Map json) {
     final git = json['git'];
     if (git is String) {
-      return new GitReference(git, null);
+      return GitReference(git, null);
     } else if (git is Map) {
       Map m = git;
-      return new GitReference(m['url'], m['ref'], m['path']);
+      return GitReference(m['url'], m['ref'], m['path']);
     } else {
-      throw new StateError('Unexpected format for git dependency $git');
+      throw StateError('Unexpected format for git dependency $git');
     }
   }
 
@@ -101,8 +101,7 @@ class HostedReference extends DependencyReference {
 
   HostedReference(this.versionConstraint);
 
-  HostedReference.fromJson(String json)
-      : this(new VersionConstraint.parse(json));
+  HostedReference.fromJson(String json) : this(VersionConstraint.parse(json));
 
   @override
   String toJson() => "${versionConstraint.toString()}";
@@ -121,7 +120,7 @@ class ExternalHostedReference extends DependencyReference {
 
   ExternalHostedReference.fromJson(Map json)
       : this(json['hosted']['name'], json['hosted']['url'],
-            new VersionConstraint.parse(json['hosted']['version']));
+            VersionConstraint.parse(json['hosted']['version']));
 
   bool operator ==(other) =>
       other is ExternalHostedReference &&

@@ -8,9 +8,9 @@ abstract class Jsonable {
   toJson();
 }
 
-JsonBuilder get buildJson => new JsonBuilder();
+JsonBuilder get buildJson => JsonBuilder();
 JsonParser parseJson(Map? j, {bool consumeMap: false}) =>
-    new JsonParser(j, consumeMap);
+    JsonParser(j, consumeMap);
 
 class JsonBuilder {
   final bool _stringEmpties;
@@ -84,7 +84,7 @@ class JsonParser {
   final bool _consumeMap;
 
   JsonParser(Map? json, bool consumeMap)
-      : this._json = consumeMap ? new Map.from(json!) : json,
+      : this._json = consumeMap ? Map.from(json!) : json,
         this._consumeMap = consumeMap;
 
   List<T> list<T>(String fieldName, [Converter<T>? create]) {
@@ -108,7 +108,7 @@ class JsonParser {
     Converter<K> _convertKey = _converter(convertKey);
     Converter<V> _convertValue = _converter(convertValue);
 
-    Map<K, V> result = new Map<K, V>();
+    Map<K, V> result = Map<K, V>();
     m.forEach((k, v) {
       result[_convertKey(k)] = _convertValue(v);
     });
@@ -121,7 +121,7 @@ class JsonParser {
 
   Map? get unconsumed {
     if (!_consumeMap) {
-      throw new StateError('unconsumed called on non consuming parser');
+      throw StateError('unconsumed called on non consuming parser');
     }
 
     return _json;
