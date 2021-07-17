@@ -24,4 +24,4 @@ A simple usage example:
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: https://github.com/Andersmholmgren/pubspec/issues
+[tracker]: https://github.com/j4qfrost/pubspec/issues
