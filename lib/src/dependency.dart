@@ -15,9 +15,6 @@ abstract class DependencyReference implements Jsonable {
 
   factory DependencyReference.fromJson(json) {
     if (json is Map) {
-      if (json.length != 1) {
-        throw StateError('expecting only one entry for dependency');
-      }
       switch (json.keys.first as String) {
         case 'path':
           return PathReference.fromJson(json);
@@ -115,14 +112,17 @@ class HostedReference extends DependencyReference {
 class ExternalHostedReference extends DependencyReference {
   final String? name, url;
   final VersionConstraint versionConstraint;
+  final bool verboseFormat;
 
-  ExternalHostedReference(this.name, this.url, this.versionConstraint);
+  ExternalHostedReference(this.name, this.url, this.versionConstraint,
+      [this.verboseFormat = true]);
 
   ExternalHostedReference.fromJson(Map json)
       : this(
             json['hosted'] is String ? null : json['hosted']['name'],
             json['hosted'] is String ? json['hosted'] : json['hosted']['url'],
-            VersionConstraint.parse(json['version']));
+            VersionConstraint.parse(json['version']),
+            json['hosted'] is String ? false : true);
 
   bool operator ==(other) =>
       other is ExternalHostedReference &&
@@ -132,7 +132,14 @@ class ExternalHostedReference extends DependencyReference {
 
   @override
   toJson() {
-    return {'name': name, 'url': url, 'version': versionConstraint.toString()};
+    if (verboseFormat) {
+      return {
+        'hosted': {'name': name, 'url': url},
+        'version': versionConstraint.toString()
+      };
+    } else {
+      return {'hosted': url, 'version': versionConstraint.toString()};
+    }
   }
 }
 
