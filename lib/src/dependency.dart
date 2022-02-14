@@ -119,8 +119,10 @@ class ExternalHostedReference extends DependencyReference {
   ExternalHostedReference(this.name, this.url, this.versionConstraint);
 
   ExternalHostedReference.fromJson(Map json)
-      : this(json['hosted']['name'], json['hosted']['url'],
-            VersionConstraint.parse(json['hosted']['version']));
+      : this(
+            json['hosted'] is String ? null : json['hosted']['name'],
+            json['hosted'] is String ? json['hosted'] : json['hosted']['url'],
+            VersionConstraint.parse(json['version']));
 
   bool operator ==(other) =>
       other is ExternalHostedReference &&
