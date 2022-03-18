@@ -1,28 +1,69 @@
 import 'dart:io';
 
+import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec/pubspec.dart';
 import 'package:test/test.dart';
 
 main() {
-  test('external hosted dependency', () {
-    var pubspecString = 'name: my_test_lib\n'
-        'version: 0.1.0\n'
-        'description: for testing\n'
-        'dependencies:\n'
-        '    meta: ^1.0.0\n'
-        '    self_hosted_lib:\n'
-        '        hosted:\n'
-        '            name: custom_lib\n'
-        '            url: https://pub.mycompany.org\n'
-        '            version: ^0.1.0';
-    var p = PubSpec.fromYamlString(pubspecString);
-    var dep = p.dependencies['self_hosted_lib']!;
-    expect(dep, TypeMatcher<ExternalHostedReference>());
+  group('external hosted dependency', () {
+    test('fromYamlString ( sdk < 2.15 )', () {
+      var pubspecString = 'name: my_test_lib\n'
+          'version: 0.1.0\n'
+          'description: for testing\n'
+          'dependencies:\n'
+          '    meta: ^1.0.0\n'
+          '    self_hosted_lib:\n'
+          '        hosted:\n'
+          '            name: custom_lib\n'
+          '            url: https://pub.mycompany.org\n'
+          '        version: ^0.1.0';
+      var p = PubSpec.fromYamlString(pubspecString);
+      var dep = p.dependencies['self_hosted_lib']!;
+      expect(dep, TypeMatcher<ExternalHostedReference>());
 
-    var exDep = dep as ExternalHostedReference;
-    expect(exDep.name, 'custom_lib');
-    expect(exDep.url, 'https://pub.mycompany.org');
-    expect(exDep.versionConstraint.toString(), '^0.1.0');
+      var exDep = dep as ExternalHostedReference;
+      expect(exDep.name, 'custom_lib');
+      expect(exDep.url, 'https://pub.mycompany.org');
+      expect(exDep.versionConstraint.toString(), '^0.1.0');
+    });
+
+    test('fromYamlString ( sdk >= 2.15 )', () {
+      var pubspecString = 'name: my_test_lib\n'
+          'version: 0.1.0\n'
+          'description: for testing\n'
+          'dependencies:\n'
+          '    meta: ^1.0.0\n'
+          '    custom_lib:\n'
+          '        hosted: https://pub.mycompany.org\n'
+          '        version: ^0.1.0';
+      var p = PubSpec.fromYamlString(pubspecString);
+      var dep = p.dependencies['custom_lib']!;
+      expect(dep, TypeMatcher<ExternalHostedReference>());
+
+      var exDep = dep as ExternalHostedReference;
+      expect(exDep.url, 'https://pub.mycompany.org');
+      expect(exDep.versionConstraint.toString(), '^0.1.0');
+    });
+
+    test('to json ( sdk >= 2.15 )', () {
+      var exDep = ExternalHostedReference(
+          'custom_lib',
+          'https://pub.mycompany.org',
+          VersionConstraint.parse('^0.1.0'),
+          false);
+      var json = exDep.toJson();
+      expect(json['hosted'], 'https://pub.mycompany.org');
+      expect(json['version'], '^0.1.0');
+    });
+
+    test('to json ( sdk < 2.15 )', () {
+      var exDep = ExternalHostedReference('custom_lib',
+          'https://pub.mycompany.org', VersionConstraint.parse('^0.1.0'));
+      var json = exDep.toJson();
+      expect(json['hosted']['url'], 'https://pub.mycompany.org');
+      expect(json['hosted']['name'], 'custom_lib');
+      expect(json['version'], '^0.1.0');
+    });
   });
 
   /// According to https://www.dartlang.org/tools/pub/dependencies#version-constraints:
