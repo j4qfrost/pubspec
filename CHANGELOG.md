@@ -1,3 +1,6 @@
+# 2.1.0
+Resolves https://github.com/j4qfrost/pubspec/issues/3 for self hosted pub
+
 # 1.0.0
 Change the sdk constraint according to the guide lines.
 renamed pubspec.dart to pubspec.dart

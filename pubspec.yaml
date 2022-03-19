@@ -1,5 +1,5 @@
 name: pubspec
-version: 2.0.1
+version: 2.1.0
 homepage: https://github.com/j4qfrost/pubspec
 description: A library for manipulating [pubspec](https://www.dartlang.org/tools/pub/pubspec.html) files
 environment:
