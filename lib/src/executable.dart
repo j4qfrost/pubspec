@@ -12,12 +12,11 @@ import 'json_utils.dart';
 /// typing <name> executes bin/<script>.dart.
 
 class Executable extends Jsonable {
-  // String name;
+  String name;
   String? script;
 
-  Executable(this.script);
-
-  Executable.fromJson(this.script);
+  Executable(this.name, String? script);
+  Executable.fromJson(this.name, String? script);
 
   /// returns the project relative path to the script.
   ///
@@ -27,7 +26,7 @@ class Executable extends Jsonable {
   ///
   /// scriptPath => bin/dcli_install.dart
   ///
-  String get scriptPath => 'bin/$script.dart';
+  String get scriptPath => 'bin/${script ?? name}.dart';
 
   @override
   String toJson() => script ?? '';

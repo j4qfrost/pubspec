@@ -105,7 +105,8 @@ class PubSpec implements Jsonable {
             'dev_dependencies', (v) => DependencyReference.fromJson(v)),
         dependencyOverrides: p.mapValues(
             'dependency_overrides', (v) => DependencyReference.fromJson(v)),
-        executables: p.mapValues('executables', (v) => Executable.fromJson(v)),
+        executables: p.mapEntries<String, Executable, String?>(
+            'executables', (k, v) => Executable.fromJson(k, v)),
         unParsedYaml: p.unconsumed);
   }
 

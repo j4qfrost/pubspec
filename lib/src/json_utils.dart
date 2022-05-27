@@ -116,6 +116,21 @@ class JsonParser {
     return result;
   }
 
+  Map<K, V> mapEntries<K, V, T>(String fieldName, V Function(K k, T v) convert) {
+    final Map? m = _getField(fieldName);
+
+    if (m == null) {
+      return {};
+    }
+
+    Map<K, V> result = Map<K, V>();
+    m.forEach((k, v) {
+      result[k] = convert(k, v);
+    });
+
+    return result;
+  }
+
   T? _getField<T>(String fieldName) =>
       (_consumeMap ? _json!.remove(fieldName) : _json![fieldName]);
 
