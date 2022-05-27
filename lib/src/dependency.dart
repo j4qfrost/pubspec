@@ -15,7 +15,8 @@ abstract class DependencyReference implements Jsonable {
 
   factory DependencyReference.fromJson(json) {
     if (json is Map) {
-      switch (json.keys.first as String) {
+      var type = getKnownType(json.keys);
+      switch (type) {
         case 'path':
           return PathReference.fromJson(json);
         case 'git':
@@ -37,6 +38,19 @@ abstract class DependencyReference implements Jsonable {
   }
 
   String toString() => json.encode(this);
+}
+
+/// The dependency type by convention is the first key
+/// however there is no require that it is the first
+/// so we need to search the map of keys to see if
+/// a know type exits.
+String getKnownType(Iterable keys) {
+  if (keys.contains('path')) return 'path';
+  if (keys.contains('git')) return 'git';
+  if (keys.contains('hosted')) return 'hosted';
+  if (keys.contains('sdk')) return 'sdk';
+
+  return "";
 }
 
 class GitReference extends DependencyReference {

@@ -159,4 +159,25 @@ main() {
       expect(jsonObj['git']['path'], 'packages/batz');
     });
   });
+
+  test('fromYamlString ( odd order )', () {
+    var pubspecString = 'name: my_test_lib\n'
+        'version: 0.1.0\n'
+        'description: for testing\n'
+        'dependencies:\n'
+        '    meta: ^1.0.0\n'
+        '    self_hosted_lib:\n'
+        '        version: ^0.1.0\n'
+        '        hosted:\n'
+        '            name: custom_lib\n'
+        '            url: https://pub.mycompany.org\n';
+    var p = PubSpec.fromYamlString(pubspecString);
+    var dep = p.dependencies['self_hosted_lib']!;
+    expect(dep, TypeMatcher<ExternalHostedReference>());
+
+    var exDep = dep as ExternalHostedReference;
+    expect(exDep.name, 'custom_lib');
+    expect(exDep.url, 'https://pub.mycompany.org');
+    expect(exDep.versionConstraint.toString(), '^0.1.0');
+  });
 }
