@@ -114,11 +114,11 @@ class PubSpec implements Jsonable {
 
   /// loads the pubspec from the [projectDirectory]
   static Future<PubSpec> load(Directory projectDirectory) =>
-      loadFile(p.join(projectDirectory.path, 'pubspec.yaml'));
+      loadFile(projectDirectory.childFile('pubspec.yaml'));
 
   /// loads the pubspec from the [file]
-  static Future<PubSpec> loadFile(String file) async =>
-      PubSpec.fromJson(loadYaml(await File(file).readAsString()));
+  static Future<PubSpec> loadFile(File file) async =>
+      PubSpec.fromJson(loadYaml(await file.readAsString()));
 
   /// creates a copy of the pubspec with the changes provided
   PubSpec copy({
@@ -155,7 +155,7 @@ class PubSpec implements Jsonable {
   /// saves the pubspec to the [projectDirectory]
   Future save(Directory projectDirectory) async {
     final ioSink =
-        File(p.join(projectDirectory.path, 'pubspec.yaml')).openWrite();
+        projectDirectory.childFile('pubspec.yaml').openWrite();
     try {
       YamlToString().writeYamlString(toJson(), ioSink);
     } finally {
