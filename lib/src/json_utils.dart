@@ -116,7 +116,8 @@ class JsonParser {
     return result;
   }
 
-  Map<K, V> mapEntries<K, V, T>(String fieldName, V Function(K k, T v) convert) {
+  Map<K, V> mapEntries<K, V, T>(
+      String fieldName, V Function(K k, T v) convert) {
     final Map? m = _getField(fieldName);
 
     if (m == null) {

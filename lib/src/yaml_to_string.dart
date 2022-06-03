@@ -66,7 +66,9 @@ class YamlToString {
     keys.forEach((key) {
       final value = node[key];
       _writeIndent(indentCount, stringSink);
-      stringSink..write(key)..write(_divider);
+      stringSink
+        ..write(key)
+        ..write(_divider);
       _writeYamlString(value, indentCount, stringSink, false);
     });
   }

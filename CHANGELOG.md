@@ -1,3 +1,8 @@
+# 2.2.0
+- Fixed #2. The executable script now returns the correct path even if the script value in pubspec.yaml is empty.
+- added logic to deal with hosted dependencies where the version is in the yaml before the hosted key. The pub get command supports this odd order and so must wek.
+- fix: external hosted reference
+
 # 2.1.0
 Resolves https://github.com/j4qfrost/pubspec/issues/3 for self hosted pub
 
