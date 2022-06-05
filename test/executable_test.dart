@@ -3,7 +3,7 @@ import 'package:pubspec/pubspec.dart';
 import 'package:test/test.dart';
 
 main() {
-  test('executables ', () async {
+  test('executables ', () {
     var pubspecString = '''name: my_test_lib
 version: 0.1.0
 description: for testing
