@@ -64,6 +64,15 @@ main() {
       expect(json['hosted']['name'], 'custom_lib');
       expect(json['version'], '^0.1.0');
     });
+
+    test('to json with a `null` version', () {
+      var exDep = ExternalHostedReference(
+          'custom_lib', 'https://pub.mycompany.org', null);
+      var json = exDep.toJson();
+      expect(json['hosted']['url'], 'https://pub.mycompany.org');
+      expect(json['hosted']['name'], 'custom_lib');
+      expect(json['version'], null);
+    });
   });
 
   /// According to https://www.dartlang.org/tools/pub/dependencies#version-constraints:

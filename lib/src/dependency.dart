@@ -94,7 +94,7 @@ class PathReference extends DependencyReference {
 }
 
 class HostedReference extends DependencyReference {
-  final VersionConstraint versionConstraint;
+  final VersionConstraint? versionConstraint;
 
   const HostedReference(this.versionConstraint);
 
@@ -111,7 +111,7 @@ class HostedReference extends DependencyReference {
 
 class ExternalHostedReference extends DependencyReference {
   final String? name, url;
-  final VersionConstraint versionConstraint;
+  final VersionConstraint? versionConstraint;
   final bool verboseFormat;
 
   ExternalHostedReference(this.name, this.url, this.versionConstraint,
@@ -119,26 +119,33 @@ class ExternalHostedReference extends DependencyReference {
 
   ExternalHostedReference.fromJson(Map json)
       : this(
-            json['hosted'] is String ? null : json['hosted']['name'],
-            json['hosted'] is String ? json['hosted'] : json['hosted']['url'],
-            VersionConstraint.parse(json['version']),
-            json['hosted'] is String ? false : true);
+      json['hosted'] is String ? null : json['hosted']['name'],
+      json['hosted'] is String ? json['hosted'] : json['hosted']['url'],
+      json['version'] != null
+          ? VersionConstraint.parse(json['version'])
+          : null,
+      json['hosted'] is String ? false : true);
 
   bool operator ==(other) =>
       other is ExternalHostedReference &&
-      other.name == name &&
-      other.url == url &&
-      other.versionConstraint == versionConstraint;
+          other.name == name &&
+          other.url == url &&
+          other.versionConstraint == versionConstraint;
 
   @override
   toJson() {
     if (verboseFormat) {
       return {
         'hosted': {'name': name, 'url': url},
-        'version': versionConstraint.toString()
+        'version':
+        versionConstraint != null ? versionConstraint.toString() : null
       };
     } else {
-      return {'hosted': url, 'version': versionConstraint.toString()};
+      return {
+        'hosted': url,
+        'version':
+        versionConstraint != null ? versionConstraint.toString() : null
+      };
     }
   }
 }
