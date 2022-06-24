@@ -4,7 +4,7 @@
 library pubspec.spec;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' hide Platform;
 
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
@@ -13,6 +13,7 @@ import 'package:yaml/yaml.dart';
 import 'executable.dart';
 import 'json_utils.dart';
 import 'dependency.dart';
+import 'platform.dart';
 import 'yaml_to_string.dart';
 
 /// Represents a [pubspec](https://www.dartlang.org/tools/pub/pubspec.html).
@@ -71,6 +72,8 @@ class PubSpec implements Jsonable {
 
   final Map<String, Executable> executables;
 
+  final Map<String, Platform> platforms;
+
   final Map? unParsedYaml;
 
   const PubSpec(
@@ -86,6 +89,7 @@ class PubSpec implements Jsonable {
       this.devDependencies: const {},
       this.dependencyOverrides: const {},
       this.executables: const {},
+      this.platforms: const {},
       this.unParsedYaml: const {}});
 
   factory PubSpec.fromJson(Map? json) {
@@ -107,6 +111,8 @@ class PubSpec implements Jsonable {
             'dependency_overrides', (v) => DependencyReference.fromJson(v)),
         executables: p.mapEntries<String, Executable, String?>(
             'executables', (k, v) => Executable.fromJson(k, v)),
+        platforms: p.mapEntries<String, Platform, String?>(
+            'platforms', (k, v) => Platform.fromJson(k)),
         unParsedYaml: p.unconsumed);
   }
 
@@ -135,6 +141,7 @@ class PubSpec implements Jsonable {
     Map<String, DependencyReference>? devDependencies,
     Map<String, DependencyReference>? dependencyOverrides,
     Map<String, Executable>? executables,
+    Map<String, Platform>? platforms,
     Map? unParsedYaml,
   }) {
     return PubSpec(
@@ -150,6 +157,7 @@ class PubSpec implements Jsonable {
         devDependencies: devDependencies ?? this.devDependencies,
         dependencyOverrides: dependencyOverrides ?? this.dependencyOverrides,
         executables: executables ?? this.executables,
+        platforms: platforms ?? this.platforms,
         unParsedYaml: unParsedYaml ?? this.unParsedYaml);
   }
 
@@ -180,6 +188,7 @@ class PubSpec implements Jsonable {
           ..add('dev_dependencies', devDependencies)
           ..add('dependency_overrides', dependencyOverrides)
           ..add('executables', executables)
+          ..add('platforms', platforms)
           ..addAll(unParsedYaml!))
         .json;
   }
