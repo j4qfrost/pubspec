@@ -1,6 +1,10 @@
+# 2.3.0
+- Added support for the platforms tag. The current system would read the platforms keyword but when writting would ouput the likes of 'linux: null'. pub.dev does not like the null.
+- removed an unused async in a unit test.
+
 # 2.2.0
 - Fixed #2. The executable script now returns the correct path even if the script value in pubspec.yaml is empty.
-- added logic to deal with hosted dependencies where the version is in the yaml before the hosted key. The pub get command supports this odd order and so must wek.
+- added logic to deal with hosted dependencies where the version is in the yaml before the hosted key. The pub get command supports this odd order and so must we.
 - fix: external hosted reference
 
 # 2.1.0
