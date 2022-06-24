@@ -12,3 +12,4 @@ dependencies:
 dev_dependencies: 
   test: ^1.16.8
   dcli: ^1.30.2
+  dcli_core: ^1.30.2
