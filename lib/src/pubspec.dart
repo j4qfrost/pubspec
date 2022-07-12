@@ -168,6 +168,7 @@ class PubSpec implements Jsonable {
     try {
       YamlToString().writeYamlString(toJson(), ioSink);
     } finally {
+      await ioSink.flush();
       return ioSink.close();
     }
   }
