@@ -1,3 +1,6 @@
+# 2.4.0
+- CRITICAL: fixed a critical bug in the 'save' method. We were not flushing the ioSink before calling close with the result
+  that we would often end up with a truncated pubspec.yaml. 
 # 2.3.0
 - Added support for the platforms tag. The current system would read the platforms keyword but when writting would ouput the likes of 'linux: null'. pub.dev does not like the null.
 - removed an unused async in a unit test.
