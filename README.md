@@ -6,7 +6,7 @@ A library for manipulating [pubspec](https://www.dartlang.org/tools/pub/pubspec.
 
 A simple usage example:
 
-    import 'package:pubspec/pubspec.dart';
+    import 'package:pubspec2/pubspec.dart';
 
     main() async {
       // load it

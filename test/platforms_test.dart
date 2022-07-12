@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dcli/dcli.dart' hide equals, PubSpec;
 import 'package:dcli_core/dcli_core.dart' as core;
-import 'package:pubspec/pubspec.dart';
-import 'package:pubspec/src/platform.dart';
+import 'package:pubspec2/pubspec.dart';
+import 'package:pubspec2/src/platform.dart';
 import 'package:test/test.dart';
 
 main() {
