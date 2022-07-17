@@ -11,32 +11,31 @@ dependencies:
   meta: ^1.0.0
 
 executables:
-  polymer-new-element: new_element
-  useful-script:
-  dcli_install: dcliinstall
+  simple:
+  explicit: explicit
+  different: explicit
 ''';
     var p = PubSpec.fromYamlString(pubspecString);
-    var exec = p.executables['dcli_install']!;
+
+    expect(p.executables.keys,
+        unorderedEquals(['simple', 'explicit', 'different']));
+
+    var exec = p.executables['simple']!;
     expect(exec, TypeMatcher<Executable>());
-    expect(exec.name, equals('dcli_install'));
+    expect(exec.name, equals('simple'));
     expect(exec.script, isNull);
+    expect(exec.scriptPath, join('bin', 'simple.dart'));
 
-    exec = p.executables['polymer-new-element']!;
+    exec = p.executables['explicit']!;
     expect(exec, TypeMatcher<Executable>());
-    expect(exec.name, equals('polymer-new-element'));
-    expect(exec.script, isNull);
+    expect(exec.name, equals('explicit'));
+    expect(exec.script, 'explicit');
+    expect(exec.scriptPath, join('bin', 'explicit.dart'));
 
-    exec = p.executables['useful-script']!;
+    exec = p.executables['different']!;
     expect(exec, TypeMatcher<Executable>());
-    expect(exec.name, equals('useful-script'));
-    expect(exec.script, isNull);
-
-    expect(
-        p.executables.keys,
-        unorderedEquals(
-            ['polymer-new-element', 'useful-script', 'dcli_install']));
-
-    expect(p.executables['useful-script']!.scriptPath,
-        join('bin', 'useful-script.dart'));
+    expect(exec.name, equals('different'));
+    expect(exec.script, 'explicit');
+    expect(exec.scriptPath, join('bin', 'explicit.dart'));
   });
 }

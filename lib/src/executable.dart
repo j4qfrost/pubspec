@@ -15,8 +15,8 @@ class Executable extends Jsonable {
   String name;
   String? script;
 
-  Executable(this.name, String? script);
-  Executable.fromJson(this.name, String? script);
+  Executable(this.name, this.script);
+  Executable.fromJson(this.name, this.script);
 
   /// returns the project relative path to the script.
   ///
