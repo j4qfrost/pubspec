@@ -1,3 +1,7 @@
+# 2.4.1
+- changed the barrel file name to pubspec2.dart to confirm with dart conventions. You will need to update your imports to package:pubspec2/pubspec2.dart.
+- Fixed a bug in the initialisation of an executable script name (it was being left as null). Added unit tests for same.
+
 # 2.4.0
 - CRITICAL: fixed a critical bug in the 'save' method. We were not flushing the ioSink before calling close with the result
   that we would often end up with a truncated pubspec.yaml. 

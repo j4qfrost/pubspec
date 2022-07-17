@@ -1,5 +1,5 @@
 name: pubspec2
-version: 2.4.0
+version: 2.4.1
 homepage: https://github.com/onepub-dev/pubspec
 description: A library for manipulating pubspec.yaml files. This is a place holder until the pubspec library is updated with PR
 repository: https://github.com/onepub-dev/pubspec
