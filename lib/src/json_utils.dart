@@ -1,9 +1,6 @@
 // Copyright (c) 2015, Anders Holmgren. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:uri/uri.dart';
-
 abstract class Jsonable {
   toJson();
 }
@@ -62,9 +59,9 @@ class JsonBuilder {
     if (value is RegExp) {
       return value.pattern;
     }
-    if (value is UriTemplate) {
-      return value.template;
-    }
+    // if (value is UriTemplate) {
+    //   return value.template;
+    // }
     if (value is DateTime) {
       return value.toIso8601String();
     }
