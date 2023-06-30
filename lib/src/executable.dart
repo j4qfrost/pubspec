@@ -12,11 +12,10 @@ import 'json_utils.dart';
 /// typing <name> executes bin/<script>.dart.
 
 class Executable extends Jsonable {
-  String name;
-  String? script;
-
   Executable(this.name, this.script);
   Executable.fromJson(this.name, this.script);
+  String name;
+  String? script;
 
   /// returns the project relative path to the script.
   ///
@@ -31,5 +30,7 @@ class Executable extends Jsonable {
   @override
   String toJson() => script ?? '';
 
-  bool operator ==(other) => other is Executable && other.script == script;
+  @override
+  bool operator ==(Object other) =>
+      other is Executable && other.script == script;
 }

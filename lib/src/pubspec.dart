@@ -1,7 +1,6 @@
 // Copyright (c) 2015, Anders Holmgren. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-library pubspec.spec;
 
 import 'dart:async';
 import 'dart:io' hide Platform;
@@ -10,9 +9,9 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
+import 'dependency.dart';
 import 'executable.dart';
 import 'json_utils.dart';
-import 'dependency.dart';
 import 'platform.dart';
 import 'yaml_to_string.dart';
 
@@ -32,6 +31,49 @@ import 'yaml_to_string.dart';
 ///
 ///
 class PubSpec implements Jsonable {
+
+  const PubSpec(
+      {this.name,
+      this.author,
+      this.version,
+      this.homepage,
+      this.documentation,
+      this.description,
+      this.publishTo,
+      this.environment,
+      this.dependencies = const {},
+      this.devDependencies = const {},
+      this.dependencyOverrides = const {},
+      this.executables = const {},
+      this.platforms = const {},
+      this.unParsedYaml = const {}});
+
+  factory PubSpec.fromJson(Map? json) {
+    final p = parseJson(json, consumeMap: true);
+    return PubSpec(
+        name: p.single('name'),
+        author: p.single('author'),
+        version: p.single('version', Version.parse),
+        homepage: p.single('homepage'),
+        documentation: p.single('documentation'),
+        description: p.single('description'),
+        publishTo: p.single('publish_to', Uri.parse),
+        environment: p.single('environment', Environment.fromJson),
+        dependencies:
+            p.mapValues('dependencies', DependencyReference.fromJson),
+        devDependencies: p.mapValues(
+            'dev_dependencies', DependencyReference.fromJson),
+        dependencyOverrides: p.mapValues(
+            'dependency_overrides', DependencyReference.fromJson),
+        executables: p.mapEntries<String, Executable, String?>(
+            'executables', Executable.fromJson),
+        platforms: p.mapEntries<String, Platform, String?>(
+            'platforms', (k, v) => Platform.fromJson(k)),
+        unParsedYaml: p.unconsumed);
+  }
+
+  factory PubSpec.fromYamlString(String yamlString) =>
+      PubSpec.fromJson(loadYaml(yamlString));
   final String? name;
 
   final String? author;
@@ -76,49 +118,6 @@ class PubSpec implements Jsonable {
 
   final Map? unParsedYaml;
 
-  const PubSpec(
-      {this.name,
-      this.author,
-      this.version,
-      this.homepage,
-      this.documentation,
-      this.description,
-      this.publishTo,
-      this.environment,
-      this.dependencies: const {},
-      this.devDependencies: const {},
-      this.dependencyOverrides: const {},
-      this.executables: const {},
-      this.platforms: const {},
-      this.unParsedYaml: const {}});
-
-  factory PubSpec.fromJson(Map? json) {
-    final p = parseJson(json, consumeMap: true);
-    return PubSpec(
-        name: p.single('name'),
-        author: p.single('author'),
-        version: p.single('version', (v) => Version.parse(v)),
-        homepage: p.single('homepage'),
-        documentation: p.single('documentation'),
-        description: p.single('description'),
-        publishTo: p.single('publish_to', (v) => Uri.parse(v)),
-        environment: p.single('environment', (v) => Environment.fromJson(v)),
-        dependencies:
-            p.mapValues('dependencies', (v) => DependencyReference.fromJson(v)),
-        devDependencies: p.mapValues(
-            'dev_dependencies', (v) => DependencyReference.fromJson(v)),
-        dependencyOverrides: p.mapValues(
-            'dependency_overrides', (v) => DependencyReference.fromJson(v)),
-        executables: p.mapEntries<String, Executable, String?>(
-            'executables', (k, v) => Executable.fromJson(k, v)),
-        platforms: p.mapEntries<String, Platform, String?>(
-            'platforms', (k, v) => Platform.fromJson(k)),
-        unParsedYaml: p.unconsumed);
-  }
-
-  factory PubSpec.fromYamlString(String yamlString) =>
-      PubSpec.fromJson(loadYaml(yamlString));
-
   /// loads the pubspec from the [projectDirectory]
   static Future<PubSpec> load(Directory projectDirectory) =>
       loadFile(p.join(projectDirectory.path, 'pubspec.yaml'));
@@ -143,8 +142,7 @@ class PubSpec implements Jsonable {
     Map<String, Executable>? executables,
     Map<String, Platform>? platforms,
     Map? unParsedYaml,
-  }) {
-    return PubSpec(
+  }) => PubSpec(
         name: name ?? this.name,
         author: author ?? this.author,
         version: version ?? this.version,
@@ -159,14 +157,13 @@ class PubSpec implements Jsonable {
         executables: executables ?? this.executables,
         platforms: platforms ?? this.platforms,
         unParsedYaml: unParsedYaml ?? this.unParsedYaml);
-  }
 
   /// saves the pubspec to the [projectDirectory]
   Future save(Directory projectDirectory) async {
     final ioSink =
         File(p.join(projectDirectory.path, 'pubspec.yaml')).openWrite();
     try {
-      YamlToString().writeYamlString(toJson(), ioSink);
+      const YamlToString().writeYamlString(toJson(), ioSink);
     } finally {
       await ioSink.flush();
       return ioSink.close();
@@ -175,8 +172,7 @@ class PubSpec implements Jsonable {
 
   /// Converts to a Map that can be serialised to Yaml or Json
   @override
-  Map toJson() {
-    return (buildJson
+  Map toJson() => (buildJson
           ..add('name', name)
           ..add('author', author)
           ..add('version', version)
@@ -192,26 +188,23 @@ class PubSpec implements Jsonable {
           ..add('platforms', platforms)
           ..addAll(unParsedYaml!))
         .json;
-  }
 }
 
 class Environment implements Jsonable {
-  final VersionConstraint? sdkConstraint;
-  final Map? unParsedYaml;
 
   const Environment(this.sdkConstraint, this.unParsedYaml);
 
   factory Environment.fromJson(Map json) {
     final p = parseJson(json, consumeMap: true);
     return Environment(
-        p.single('sdk', (v) => VersionConstraint.parse(v)), p.unconsumed);
+        p.single('sdk', VersionConstraint.parse), p.unconsumed);
   }
+  final VersionConstraint? sdkConstraint;
+  final Map? unParsedYaml;
 
   @override
-  Map toJson() {
-    return (buildJson
-          ..add('sdk', "${sdkConstraint.toString()}")
+  Map toJson() => (buildJson
+          ..add('sdk', '$sdkConstraint')
           ..addAll(unParsedYaml!))
         .json;
-  }
 }

@@ -1,19 +1,21 @@
-// Copyright (c) 2015, Anders Holmgren. All rights reserved. Use of this source code
+// Copyright (c) 2015, Anders Holmgren. All rights reserved.
+//Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
+// ignore: one_member_abstracts
 abstract class Jsonable {
-  toJson();
+  Map<String, Object> toJson();
 }
 
 JsonBuilder get buildJson => JsonBuilder();
-JsonParser parseJson(Map? j, {bool consumeMap: false}) =>
+JsonParser parseJson(Map<String, dynamic>? j, {bool consumeMap = false}) =>
     JsonParser(j, consumeMap);
 
 class JsonBuilder {
+  JsonBuilder({bool stringEmpties = true}) : _stringEmpties = stringEmpties;
   final bool _stringEmpties;
-  JsonBuilder({bool stringEmpties: true}) : this._stringEmpties = stringEmpties;
 
-  final Map json = {};
+  final Map<String, dynamic> json = {};
 
 //  void addObject(String fieldName, o) {
 //    if (o != null) {
@@ -30,11 +32,11 @@ class JsonBuilder {
     }
   }
 
-  void addAll(Map map) {
+  void addAll(Map<String, dynamic> map) {
     json.addAll(map);
   }
 
-  _transformValue(value, [transform(v)?]) {
+  dynamic _transformValue(value, [transform(v)?]) {
     if (transform != null) {
       return transform(value);
     }
@@ -53,7 +55,7 @@ class JsonBuilder {
       return result.isNotEmpty || !_stringEmpties ? result : null;
     }
     if (value is Iterable) {
-      final list = value.map((v) => _transformValue(v, null)).toList();
+      final list = value.map(_transformValue).toList();
       return list.isNotEmpty || !_stringEmpties ? list : null;
     }
     if (value is RegExp) {
@@ -72,20 +74,19 @@ class JsonBuilder {
   }
 }
 
-typedef T Converter<T>(value);
+typedef Converter<T> = T Function(dynamic value);
 
 Converter<T> _converter<T>(Converter<T>? convert) => convert ?? ((v) => v as T);
 
 class JsonParser {
-  final Map? _json;
+  JsonParser(Map<String, dynamic>? json, bool consumeMap)
+      : _json = consumeMap ? Map.from(json!) : json,
+        _consumeMap = consumeMap;
+  final Map<String, dynamic>? _json;
   final bool _consumeMap;
 
-  JsonParser(Map? json, bool consumeMap)
-      : this._json = consumeMap ? Map.from(json!) : json,
-        this._consumeMap = consumeMap;
-
   List<T> list<T>(String fieldName, [Converter<T>? create]) {
-    final List? l = _getField(fieldName);
+    final l = _getField(fieldName);
     return l != null ? l.map(_converter(create)).toList(growable: false) : [];
   }
 
@@ -96,16 +97,16 @@ class JsonParser {
 
   Map<K, V> mapValues<K, V>(String fieldName,
       [Converter<V>? convertValue, Converter<K>? convertKey]) {
-    final Map? m = _getField(fieldName);
+    final m = _getField(fieldName);
 
     if (m == null) {
       return {};
     }
 
-    Converter<K> _convertKey = _converter(convertKey);
-    Converter<V> _convertValue = _converter(convertValue);
+    final _convertKey = _converter(convertKey);
+    final _convertValue = _converter(convertValue);
 
-    Map<K, V> result = Map<K, V>();
+    final result = <K, V>{};
     m.forEach((k, v) {
       result[_convertKey(k)] = _convertValue(v);
     });
@@ -115,13 +116,13 @@ class JsonParser {
 
   Map<K, V> mapEntries<K, V, T>(
       String fieldName, V Function(K k, T v) convert) {
-    final Map? m = _getField(fieldName);
+    final m = _getField(fieldName);
 
     if (m == null) {
       return {};
     }
 
-    Map<K, V> result = Map<K, V>();
+    final result = <K, V>{};
     m.forEach((k, v) {
       result[k] = convert(k, v);
     });

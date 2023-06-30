@@ -1,8 +1,6 @@
 // Copyright (c) 2015, Anders Holmgren. All rights reserved. Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-library pubspec.dependency;
-
 import 'dart:convert';
 
 // ignore: import_of_legacy_library_into_null_safe
@@ -13,12 +11,12 @@ import 'json_utils.dart';
 abstract class DependencyReference implements Jsonable {
   const DependencyReference();
 
-  factory DependencyReference.fromJson(json) {
+  factory DependencyReference.fromJson(dynamic json) {
     if (json is Map) {
-      var type = getKnownType(json.keys);
+      final type = getKnownType(json.keys);
       switch (type) {
         case 'path':
-          return PathReference.fromJson(json);
+          return PathReference.fromJson(json as Map<String, Object>);
         case 'git':
           return GitReference.fromJson(json);
         case 'hosted':
@@ -37,6 +35,7 @@ abstract class DependencyReference implements Jsonable {
     }
   }
 
+  @override
   String toString() => json.encode(this);
 }
 
@@ -45,89 +44,103 @@ abstract class DependencyReference implements Jsonable {
 /// so we need to search the map of keys to see if
 /// a know type exits.
 String getKnownType(Iterable keys) {
-  if (keys.contains('path')) return 'path';
-  if (keys.contains('git')) return 'git';
-  if (keys.contains('hosted')) return 'hosted';
-  if (keys.contains('sdk')) return 'sdk';
+  if (keys.contains('path')) {
+    return 'path';
+  }
+  if (keys.contains('git')) {
+    return 'git';
+  }
+  if (keys.contains('hosted')) {
+    return 'hosted';
+  }
+  if (keys.contains('sdk')) {
+    return 'sdk';
+  }
 
-  return "";
+  return '';
 }
 
 class GitReference extends DependencyReference {
-  final String url;
-  final String? ref;
-  final String? path;
-
   const GitReference(this.url, [this.ref, this.path]);
 
   factory GitReference.fromJson(Map json) {
     final git = json['git'];
     if (git is String) {
-      return GitReference(git, null);
+      return GitReference(git);
     } else if (git is Map) {
-      Map m = git;
-      return GitReference(m['url'], m['ref'], m['path']);
+      final m = git;
+      return GitReference(
+          m['url'] as String, m['ref'] as String, m['path'] as String);
     } else {
       throw StateError('Unexpected format for git dependency $git');
     }
   }
+  final String url;
+  final String? ref;
+  final String? path;
 
   @override
-  Map toJson() {
+  Map<String, Object> toJson() {
     if (ref == null && path == null) {
-      return {'git': url.toString()};
+      return {'git': url};
     }
 
-    var arguments = {'url': url.toString()};
+    final arguments = {'url': url};
 
-    if (ref != null) arguments['ref'] = ref!;
-    if (path != null) arguments['path'] = path!;
+    if (ref != null) {
+      arguments['ref'] = ref!;
+    }
+    if (path != null) {
+      arguments['path'] = path!;
+    }
 
     return {'git': arguments};
   }
 
-  bool operator ==(other) =>
+  @override
+  bool operator ==(Object other) =>
       other is GitReference && other.url == url && other.ref == ref;
 
+  @override
   int get hashCode => ref.hashCode;
 }
 
 class PathReference extends DependencyReference {
-  final String? path;
-
   const PathReference(this.path);
 
-  PathReference.fromJson(Map json) : this(json['path']);
+  PathReference.fromJson(Map<String, Object> json)
+      : this(json['path'] as String?);
+  final String? path;
 
   @override
-  Map toJson() => {'path': path};
+  Map<String, Object> toJson() => {'path': path ?? ''};
 
-  bool operator ==(other) => other is PathReference && other.path == path;
+  @override
+  bool operator ==(Object other) =>
+      other is PathReference && other.path == path;
 
+  @override
   int get hashCode => path.hashCode;
 }
 
 class HostedReference extends DependencyReference {
-  final VersionConstraint versionConstraint;
-
   const HostedReference(this.versionConstraint);
 
   HostedReference.fromJson(String json) : this(VersionConstraint.parse(json));
+  final VersionConstraint versionConstraint;
 
   @override
-  String toJson() => "${versionConstraint.toString()}";
+  Map<String, Object> toJson() => versionConstraint.toJson();
 
-  bool operator ==(other) =>
+  @override
+  bool operator ==(Object other) =>
       other is HostedReference && other.versionConstraint == versionConstraint;
 
+  @override
   int get hashCode => versionConstraint.hashCode;
 }
 
 class ExternalHostedReference extends DependencyReference {
-  final String? name, url;
-  final VersionConstraint versionConstraint;
-  final bool verboseFormat;
-
   ExternalHostedReference(this.name, this.url, this.versionConstraint,
       [this.verboseFormat = true]);
 
@@ -137,15 +150,20 @@ class ExternalHostedReference extends DependencyReference {
             json['hosted'] is String ? json['hosted'] : json['hosted']['url'],
             VersionConstraint.parse(json['version']),
             json['hosted'] is String ? false : true);
+  final String? name;
+  final String? url;
+  final VersionConstraint versionConstraint;
+  final bool verboseFormat;
 
-  bool operator ==(other) =>
+  @override
+  bool operator ==(Object other) =>
       other is ExternalHostedReference &&
       other.name == name &&
       other.url == url &&
       other.versionConstraint == versionConstraint;
 
   @override
-  toJson() {
+  Map<String, Object?> toJson() {
     if (verboseFormat) {
       return {
         'hosted': {'name': name, 'url': url},
@@ -158,16 +176,14 @@ class ExternalHostedReference extends DependencyReference {
 }
 
 class SdkReference extends DependencyReference {
-  final String? sdk;
-
   const SdkReference(this.sdk);
 
   SdkReference.fromJson(Map json) : this(json['sdk']);
-
-  bool operator ==(other) => other is SdkReference && other.sdk == sdk;
+  final String? sdk;
 
   @override
-  toJson() {
-    return {'sdk': sdk};
-  }
+  bool operator ==(Object other) => other is SdkReference && other.sdk == sdk;
+
+  @override
+  Map<String, String?> toJson() => {'sdk': sdk};
 }

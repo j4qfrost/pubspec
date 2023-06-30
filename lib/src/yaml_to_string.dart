@@ -7,22 +7,23 @@ class YamlToString {
     this.quotes = "'",
   });
 
-  final String indent, quotes;
-  static final _divider = ': ';
+  final String indent;
+  final String quotes;
+  static const _divider = ': ';
 
-  String toYamlString(node) {
+  String toYamlString(Object node) {
     final stringBuffer = StringBuffer();
     writeYamlString(node, stringBuffer);
     return stringBuffer.toString();
   }
 
   /// Serializes [node] into a String and writes it to the [sink].
-  void writeYamlString(node, StringSink sink) {
+  void writeYamlString(Object node, StringSink sink) {
     _writeYamlString(node, 0, sink, true);
   }
 
   void _writeYamlString(
-    node,
+    Object node,
     int indentCount,
     StringSink stringSink,
     bool isTopLevel,
@@ -34,7 +35,7 @@ class YamlToString {
     } else if (node is String) {
       stringSink.writeln(_escapeString(node));
     } else if (node is double) {
-      stringSink.writeln("!!float $node");
+      stringSink.writeln('!!float $node');
     } else {
       stringSink.writeln(node);
     }
@@ -51,7 +52,7 @@ class YamlToString {
   }
 
   void _mapToYamlString(
-    node,
+    Object node,
     int indentCount,
     StringSink stringSink,
     bool isTopLevel,
@@ -63,15 +64,17 @@ class YamlToString {
 
     final keys = _sortKeys(node);
 
-    keys.forEach((key) {
+    for (final key in keys) {
       final value = node[key];
       _writeIndent(indentCount, stringSink);
-      stringSink..write(key)..write(_divider);
+      stringSink
+        ..write(key)
+        ..write(_divider);
       _writeYamlString(value, indentCount, stringSink, false);
-    });
+    }
   }
 
-  Iterable<String> _sortKeys(Map map) {
+  Iterable<String> _sortKeys(Map<String, Object> map) {
     final simple = <String>[],
         maps = <String>[],
         lists = <String>[],
@@ -103,11 +106,11 @@ class YamlToString {
       indentCount += 2;
     }
 
-    node.forEach((value) {
+    for (final value in node) {
       _writeIndent(indentCount, stringSink);
       stringSink.write('- ');
       _writeYamlString(value, indentCount, stringSink, false);
-    });
+    }
   }
 
   void _writeIndent(int indentCount, StringSink stringSink) =>
