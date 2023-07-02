@@ -1,3 +1,7 @@
+# 2.5.0
+- improvements to the type system
+- Fixed a bug on Windows where the executable script path used the wrong path delimiter.
+
 # 2.4.2
 - removed dependency on package uri as we aren't using it.
 
