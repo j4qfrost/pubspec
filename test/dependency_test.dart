@@ -46,11 +46,9 @@ void main() {
     });
 
     test('to json ( sdk >= 2.15 )', () {
-      final exDep = ExternalHostedReference(
-          'custom_lib',
-          'https://pub.mycompany.org',
-          VersionConstraint.parse('^0.1.0'),
-          false);
+      final exDep = ExternalHostedReference('custom_lib',
+          'https://pub.mycompany.org', VersionConstraint.parse('^0.1.0'),
+          verboseFormat: false);
       final json = exDep.toJson();
       expect(json['hosted'], 'https://pub.mycompany.org');
       expect(json['version'], '^0.1.0');
@@ -60,8 +58,8 @@ void main() {
       final exDep = ExternalHostedReference('custom_lib',
           'https://pub.mycompany.org', VersionConstraint.parse('^0.1.0'));
       final json = exDep.toJson();
-      expect(json['hosted']['url'], 'https://pub.mycompany.org');
-      expect(json['hosted']['name'], 'custom_lib');
+      expect((json['hosted']! as Json)['url'], 'https://pub.mycompany.org');
+      expect((json['hosted']! as Json)['name'], 'custom_lib');
       expect(json['version'], '^0.1.0');
     });
   });
@@ -141,8 +139,8 @@ void main() {
 
       final jsonObj = subject.toJson();
 
-      expect(jsonObj['git']['url'], 'git://github.com/foo/bar.git');
-      expect(jsonObj['git']['ref'], 'master');
+      expect((jsonObj['git']! as Json)['url'], 'git://github.com/foo/bar.git');
+      expect((jsonObj['git']! as Json)['ref'], 'master');
     });
 
     test('toJson url, ref, path', () {
@@ -154,9 +152,9 @@ void main() {
 
       final jsonObj = subject.toJson();
 
-      expect(jsonObj['git']['url'], 'git://github.com/foo/bar.git');
-      expect(jsonObj['git']['ref'], 'master');
-      expect(jsonObj['git']['path'], 'packages/batz');
+      expect((jsonObj['git']! as Json)['url'], 'git://github.com/foo/bar.git');
+      expect((jsonObj['git']! as Json)['ref'], 'master');
+      expect((jsonObj['git']! as Json)['path'], 'packages/batz');
     });
   });
 

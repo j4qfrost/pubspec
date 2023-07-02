@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 import 'json_utils.dart';
 
 /// Defines an platform listed in the 'platforms' section
@@ -5,14 +7,18 @@ import 'json_utils.dart';
 ///
 /// The [name] is the name of the platform that you package
 /// supports.
+@immutable
 class Platform extends Jsonable {
   Platform(this.name);
   Platform.fromJson(this.name);
-  String name;
+  final String name;
 
   @override
   Map<String, Object> toJson() => <String, Object>{};
 
   @override
   bool operator ==(Object other) => other is Platform && other.name == name;
+
+  @override
+  int get hashCode => name.hashCode;
 }

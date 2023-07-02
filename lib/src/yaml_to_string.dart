@@ -28,9 +28,9 @@ class YamlToString {
     StringSink stringSink,
     bool isTopLevel,
   ) {
-    if (node is Map) {
+    if (node is Map<String, Object>) {
       _mapToYamlString(node, indentCount, stringSink, isTopLevel);
-    } else if (node is Iterable) {
+    } else if (node is Iterable<String>) {
       _listToYamlString(node, indentCount, stringSink, isTopLevel);
     } else if (node is String) {
       stringSink.writeln(_escapeString(node));
@@ -52,7 +52,7 @@ class YamlToString {
   }
 
   void _mapToYamlString(
-    Object node,
+    Map<String, Object> node,
     int indentCount,
     StringSink stringSink,
     bool isTopLevel,
@@ -65,7 +65,7 @@ class YamlToString {
     final keys = _sortKeys(node);
 
     for (final key in keys) {
-      final value = node[key];
+      final value = node[key]!;
       _writeIndent(indentCount, stringSink);
       stringSink
         ..write(key)
@@ -75,10 +75,10 @@ class YamlToString {
   }
 
   Iterable<String> _sortKeys(Map<String, Object> map) {
-    final simple = <String>[],
-        maps = <String>[],
-        lists = <String>[],
-        other = <String>[];
+    final simple = <String>[];
+    final maps = <String>[];
+    final lists = <String>[];
+    final other = <String>[];
 
     map.forEach((key, value) {
       if (value is String) {
@@ -96,7 +96,7 @@ class YamlToString {
   }
 
   void _listToYamlString(
-    Iterable node,
+    Iterable<Object> node,
     int indentCount,
     StringSink stringSink,
     bool isTopLevel,

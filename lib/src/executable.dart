@@ -1,3 +1,7 @@
+import 'package:meta/meta.dart';
+import 'package:path/path.dart';
+
+import 'dependency.dart';
 import 'json_utils.dart';
 
 /// Defines an executable listed in the 'exectuables' section
@@ -11,11 +15,12 @@ import 'json_utils.dart';
 /// directory. If the [script] isn't supplied this defaults to [name];
 /// typing <name> executes bin/<script>.dart.
 
+@immutable
 class Executable extends Jsonable {
   Executable(this.name, this.script);
   Executable.fromJson(this.name, this.script);
-  String name;
-  String? script;
+  final String name;
+  final String? script;
 
   /// returns the project relative path to the script.
   ///
@@ -25,12 +30,15 @@ class Executable extends Jsonable {
   ///
   /// scriptPath => bin/dcli_install.dart
   ///
-  String get scriptPath => 'bin/${script ?? name}.dart';
+  String get scriptPath => join('bin', '${script ?? name}.dart');
 
   @override
-  String toJson() => script ?? '';
+  Json toJson() => {name: script ?? ''};
 
   @override
   bool operator ==(Object other) =>
       other is Executable && other.script == script;
+
+  @override
+  int get hashCode => script.hashCode;
 }
