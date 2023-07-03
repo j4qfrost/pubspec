@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 
-import 'dependency.dart';
+import 'dependency/dependency.dart';
 import 'json_utils.dart';
 
 /// Defines an executable listed in the 'exectuables' section

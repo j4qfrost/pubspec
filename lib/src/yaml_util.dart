@@ -1,7 +1,7 @@
 import 'package:yaml/yaml.dart';
 import 'package:yaml_extension/yaml_extension.dart';
 
-import 'dependency.dart';
+import 'dependency/dependency.dart';
 import 'type.dart';
 
 YamlParser parseYaml(YamlMap j, {bool consumeMap = false}) =>

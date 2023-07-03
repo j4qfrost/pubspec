@@ -9,7 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-import 'dependency.dart';
+import 'dependency/dependency.dart';
 import 'executable.dart';
 import 'json_utils.dart';
 import 'platform.dart';
