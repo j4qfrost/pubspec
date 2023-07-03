@@ -15,6 +15,7 @@ version: 0.1.0
 description: for testing
 dependencies: 
   meta: ^1.0.0
+  dcli: 1.2.0
 platforms: 
   linux: 
   windows: 

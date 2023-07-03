@@ -1,3 +1,5 @@
+import 'dependency/dependency.dart';
+
 final _unsuportedCharacters = RegExp(
     r'''^[\n\t ,[\]{}#&*!|<>'"%@']|^[?-]$|^[?-][ \t]|[\n:][ \t]|[ \t]\n|[\n\t ]#|[\n\t :]$''');
 
@@ -28,7 +30,7 @@ class YamlToString {
     StringSink stringSink,
     bool isTopLevel,
   ) {
-    if (node is Map<String, Object>) {
+    if (node is Json) {
       _mapToYamlString(node, indentCount, stringSink, isTopLevel);
     } else if (node is Iterable<String>) {
       _listToYamlString(node, indentCount, stringSink, isTopLevel);
@@ -52,7 +54,7 @@ class YamlToString {
   }
 
   void _mapToYamlString(
-    Map<String, Object> node,
+    Json node,
     int indentCount,
     StringSink stringSink,
     bool isTopLevel,
@@ -65,16 +67,16 @@ class YamlToString {
     final keys = _sortKeys(node);
 
     for (final key in keys) {
-      final value = node[key]!;
+      final value = node[key];
       _writeIndent(indentCount, stringSink);
       stringSink
         ..write(key)
         ..write(_divider);
-      _writeYamlString(value, indentCount, stringSink, false);
+      _writeYamlString(value ?? '', indentCount, stringSink, false);
     }
   }
 
-  Iterable<String> _sortKeys(Map<String, Object> map) {
+  Iterable<String> _sortKeys(Json map) {
     final simple = <String>[];
     final maps = <String>[];
     final lists = <String>[];

@@ -2,12 +2,12 @@
 //Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-import 'dependency.dart';
+import 'dependency/dependency.dart';
 import 'type.dart';
 
 // ignore: one_member_abstracts
 abstract class Jsonable {
-  Json toJson();
+  Object toJson();
 }
 
 JsonBuilder get buildJson => JsonBuilder();
@@ -29,7 +29,9 @@ class JsonBuilder {
   void add(String fieldName, Object? v, [Transform? transform]) {
     if (v != null) {
       final transformed = _transformValue(v, transform);
-      json[fieldName] = transformed;
+      if (transformed != null) {
+        json[fieldName] = transformed;
+      }
     }
   }
 
