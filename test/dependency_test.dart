@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:dcli_core/dcli_core.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec2/pubspec2.dart';
 import 'package:test/test.dart';
@@ -98,7 +97,26 @@ void main() {
   });
 
   test('load from file', () async {
-    final fromDir = await PubSpec.load(Directory('.'));
+    final fromDir = await PubSpec.load('.');
+    final fromFile = await PubSpec.loadFile('./pubspec.yaml');
+    expect(fromFile.toJson(), equals(fromDir.toJson()));
+  });
+
+  test('save to file', () async {
+    const pubspecString = 'name: my_test_lib\n'
+        'version: 0.1.0\n'
+        'description: for testing\n'
+        'dependencies:\n'
+        '    flutter:\n'
+        '        sdk: flutter\n';
+    final p = PubSpec.fromYamlString(pubspecString);
+
+    await withTempDir((tempDir) async {
+      await p.save(tempDir);
+      await PubSpec.load(tempDir);
+    });
+
+    final fromDir = await PubSpec.load('.');
     final fromFile = await PubSpec.loadFile('./pubspec.yaml');
     expect(fromFile.toJson(), equals(fromDir.toJson()));
   });

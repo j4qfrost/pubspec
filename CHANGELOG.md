@@ -1,7 +1,10 @@
 # 3.0.0
 - moved dependency types into their own libraries.
 - breaking change in ExternalHostedReference ctor. bool argument verboseFormat is now a named parameter.
-
+- breaking change - load and save now take the directory path as a String rather than a Directory.
+- removed dcli as a dependency to reduce the circular dependencies 
+ between these packages.
+ 
 
 # 2.5.0
 - improvements to the type system

@@ -116,8 +116,8 @@ class PubSpec implements Jsonable {
   final Json? unParsedYaml;
 
   /// loads the pubspec from the [projectDirectory]
-  static Future<PubSpec> load(Directory projectDirectory) =>
-      loadFile(p.join(projectDirectory.path, 'pubspec.yaml'));
+  static Future<PubSpec> load(String projectDirectory) =>
+      loadFile(p.join(projectDirectory, 'pubspec.yaml'));
 
   /// loads the pubspec from the [file]
   static Future<PubSpec> loadFile(String file) async =>
@@ -157,9 +157,8 @@ class PubSpec implements Jsonable {
           unParsedYaml: unParsedYaml ?? this.unParsedYaml);
 
   /// saves the pubspec to the [projectDirectory]
-  Future<dynamic> save(Directory projectDirectory) async {
-    final ioSink =
-        File(p.join(projectDirectory.path, 'pubspec.yaml')).openWrite();
+  Future<dynamic> save(String projectDirectory) async {
+    final ioSink = File(p.join(projectDirectory, 'pubspec.yaml')).openWrite();
     try {
       const YamlToString().writeYamlString(toJson(), ioSink);
     } finally {

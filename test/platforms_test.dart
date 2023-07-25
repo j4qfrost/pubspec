@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:dcli/dcli.dart' hide PubSpec;
 import 'package:dcli_core/dcli_core.dart' as core;
 import 'package:path/path.dart' hide equals;
 import 'package:pubspec2/pubspec2.dart';
@@ -36,12 +33,16 @@ platforms:
 
     expect(p.platforms.keys, unorderedEquals(['linux', 'windows', 'macos']));
 
-    await core.withTempDir((pathToPubspec) async {
-      await p.save(Directory(pathToPubspec));
+    await core.withTempDir((tempDir) async {
+      await p.save(tempDir);
 
-      final content =
-          '${read(join(pathToPubspec, 'pubspec.yaml')).toParagraph()}\n';
-      expect(content, equals(pubspecString));
+      final pathToPubspec = join(tempDir, 'pubspec.yaml');
+
+      final lf = core.LineFile(pathToPubspec);
+      final content = await lf
+          .readAll()
+          .reduce((previous, current) => '$previous\n$current');
+      expect('$content\n', equals(pubspecString));
     });
   });
 }

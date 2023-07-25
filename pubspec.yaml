@@ -4,7 +4,7 @@ homepage: https://github.com/onepub-dev/pubspec
 description: A library for manipulating pubspec.yaml files. This is a place holder until the pubspec library is updated with PR
 repository: https://github.com/onepub-dev/pubspec
 environment: 
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 dependencies: 
   meta: ^1.9.1
   path: ^1.8.3
@@ -12,7 +12,6 @@ dependencies:
   yaml: ^3.1.0
   yaml_extension: ^1.0.2
 dev_dependencies: 
-  dcli: ^3.0.3
-  dcli_core: ^3.0.3
+  dcli_core: ^3.0.0
   lint_hard: ^4.0.0
   test: ^1.16.8
