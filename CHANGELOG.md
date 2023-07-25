@@ -1,3 +1,37 @@
+# 4.0.0
+- breaking change - load and save now take the directory path as a String rather than a Directory.
+- removed dcli as a dependency to reduce the circular dependencies 
+ between these packages.
+- breaking changed move min sdk to 3.x
+
+# 3.0.0
+- moved dependency types into their own libraries.
+- breaking change in ExternalHostedReference ctor. bool argument verboseFormat is now a named parameter.
+ 
+
+# 2.5.0
+- improvements to the type system
+- Fixed a bug on Windows where the executable script path used the wrong path delimiter.
+
+# 2.4.2
+- removed dependency on package uri as we aren't using it.
+
+# 2.4.1
+- changed the barrel file name to pubspec2.dart to confirm with dart conventions. You will need to update your imports to package:pubspec2/pubspec2.dart.
+- Fixed a bug in the initialisation of an executable script name (it was being left as null). Added unit tests for same.
+
+# 2.4.0
+- CRITICAL: fixed a critical bug in the 'save' method. We were not flushing the ioSink before calling close with the result
+  that we would often end up with a truncated pubspec.yaml. 
+# 2.3.0
+- Added support for the platforms tag. The current system would read the platforms keyword but when writting would ouput the likes of 'linux: null'. pub.dev does not like the null.
+- removed an unused async in a unit test.
+
+# 2.2.0
+- Fixed #2. The executable script now returns the correct path even if the script value in pubspec.yaml is empty.
+- added logic to deal with hosted dependencies where the version is in the yaml before the hosted key. The pub get command supports this odd order and so must we.
+- fix: external hosted reference
+
 # 2.1.0
 Resolves https://github.com/j4qfrost/pubspec/issues/3 for self hosted pub
 

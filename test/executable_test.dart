@@ -1,38 +1,42 @@
-import 'package:pubspec/pubspec.dart';
+import 'package:path/path.dart' hide equals;
+import 'package:pubspec2/pubspec2.dart';
 import 'package:test/test.dart';
 
-main() {
+void main() {
   test('executables ', () {
-    var pubspecString = '''name: my_test_lib
+    const pubspecString = '''
+name: my_test_lib
 version: 0.1.0
 description: for testing
 dependencies:
   meta: ^1.0.0
 
 executables:
-  polymer-new-element: new_element
-  useful-script:
-  dcli_install: dcliinstall
+  simple:
+  explicit: explicit
+  different: explicit
 ''';
-    var p = PubSpec.fromYamlString(pubspecString);
-    var exec = p.executables['dcli_install']!;
-    expect(exec, TypeMatcher<Executable>());
-    //expect(exec.name, equals('dcli_install'));
-    expect(exec.script, equals('dcliinstall'));
+    final p = PubSpec.fromYamlString(pubspecString);
 
-    exec = p.executables['polymer-new-element']!;
-    expect(exec, TypeMatcher<Executable>());
-    //expect(exec.name, equals('polymer-new-element'));
-    expect(exec.script, equals('new_element'));
+    expect(p.executables.keys,
+        unorderedEquals(['simple', 'explicit', 'different']));
 
-    exec = p.executables['useful-script']!;
-    expect(exec, TypeMatcher<Executable>());
-    // expect(exec.name, equals('useful-script'));
+    var exec = p.executables['simple']!;
+    expect(exec, const TypeMatcher<Executable>());
+    expect(exec.name, equals('simple'));
     expect(exec.script, isNull);
+    expect(exec.scriptPath, join('bin', 'simple.dart'));
 
-    expect(
-        p.executables.keys,
-        unorderedEquals(
-            ['polymer-new-element', 'useful-script', 'dcli_install']));
+    exec = p.executables['explicit']!;
+    expect(exec, const TypeMatcher<Executable>());
+    expect(exec.name, equals('explicit'));
+    expect(exec.script, 'explicit');
+    expect(exec.scriptPath, join('bin', 'explicit.dart'));
+
+    exec = p.executables['different']!;
+    expect(exec, const TypeMatcher<Executable>());
+    expect(exec.name, equals('different'));
+    expect(exec.script, 'explicit');
+    expect(exec.scriptPath, join('bin', 'explicit.dart'));
   });
 }

@@ -1,13 +1,17 @@
-name: pubspec
-version: 2.1.0
-homepage: https://github.com/j4qfrost/pubspec
-description: A library for manipulating [pubspec](https://www.dartlang.org/tools/pub/pubspec.html) files
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-dependencies:
-  path: ^1.8.0
+name: pubspec2
+version: 4.0.0
+homepage: https://github.com/onepub-dev/pubspec
+description: A library for manipulating pubspec.yaml files. This is a place holder until the pubspec library is updated with PR
+repository: https://github.com/onepub-dev/pubspec
+environment: 
+  sdk: '>=3.0.0 <4.0.0'
+dependencies: 
+  meta: ^1.9.1
+  path: ^1.8.3
   pub_semver: ^2.0.0
   yaml: ^3.1.0
-  uri: ^1.0.0
-dev_dependencies:
+  yaml_extension: ^1.0.2
+dev_dependencies: 
+  dcli_core: ^3.0.0
+  lint_hard: ^4.0.0
   test: ^1.16.8

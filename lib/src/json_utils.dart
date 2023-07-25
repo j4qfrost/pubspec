@@ -1,22 +1,24 @@
-// Copyright (c) 2015, Anders Holmgren. All rights reserved. Use of this source code
+// Copyright (c) 2015, Anders Holmgren. All rights reserved.
+//Use of this source code
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:uri/uri.dart';
+import 'dependency/dependency.dart';
+import 'type.dart';
 
+// ignore: one_member_abstracts
 abstract class Jsonable {
-  toJson();
+  Object toJson();
 }
 
 JsonBuilder get buildJson => JsonBuilder();
-JsonParser parseJson(Map? j, {bool consumeMap: false}) =>
-    JsonParser(j, consumeMap);
+JsonParser parseJson(Map<String, dynamic>? j, {bool consumeMap = false}) =>
+    JsonParser(j, consumeMap: consumeMap);
 
 class JsonBuilder {
+  JsonBuilder({bool stringEmpties = true}) : _stringEmpties = stringEmpties;
   final bool _stringEmpties;
-  JsonBuilder({bool stringEmpties: true}) : this._stringEmpties = stringEmpties;
 
-  final Map json = {};
+  final Map<String, dynamic> json = {};
 
 //  void addObject(String fieldName, o) {
 //    if (o != null) {
@@ -24,7 +26,7 @@ class JsonBuilder {
 //    }
 //  }
 
-  void add(String fieldName, v, [transform(v)?]) {
+  void add(String fieldName, Object? v, [Transform? transform]) {
     if (v != null) {
       final transformed = _transformValue(v, transform);
       if (transformed != null) {
@@ -33,11 +35,11 @@ class JsonBuilder {
     }
   }
 
-  void addAll(Map map) {
+  void addAll(Map<String, dynamic> map) {
     json.addAll(map);
   }
 
-  _transformValue(value, [transform(v)?]) {
+  Object? _transformValue(Object value, [Transform? transform]) {
     if (transform != null) {
       return transform(value);
     }
@@ -45,26 +47,24 @@ class JsonBuilder {
       return value.toJson();
     }
     if (value is Map) {
-      final result = {};
+      final result = <String, Object?>{};
       value.forEach((k, v) {
-        final transformedValue = _transformValue(v);
-        final transformedKey = _transformValue(k);
-        if (transformedValue != null && transformedKey != null) {
-          result[transformedKey] = transformedValue;
-        }
+        final transformedValue = _transformValue(v as Object);
+        final transformedKey = _transformValue(k as String) as String?;
+        result[transformedKey!] = transformedValue;
       });
       return result.isNotEmpty || !_stringEmpties ? result : null;
     }
     if (value is Iterable) {
-      final list = value.map((v) => _transformValue(v, null)).toList();
+      final list = value.map((v) => _transformValue(v as Object)).toList();
       return list.isNotEmpty || !_stringEmpties ? list : null;
     }
     if (value is RegExp) {
       return value.pattern;
     }
-    if (value is UriTemplate) {
-      return value.template;
-    }
+    // if (value is UriTemplate) {
+    //   return value.template;
+    // }
     if (value is DateTime) {
       return value.toIso8601String();
     }
@@ -75,51 +75,81 @@ class JsonBuilder {
   }
 }
 
-typedef T Converter<T>(value);
-
-Converter<T> _converter<T>(Converter<T>? convert) => convert ?? ((v) => v as T);
-
 class JsonParser {
-  final Map? _json;
+  JsonParser(Map<String, dynamic>? json, {required bool consumeMap})
+      : _json = consumeMap ? Map.from(json!) : json,
+        _consumeMap = consumeMap;
+  final Json? _json;
   final bool _consumeMap;
 
-  JsonParser(Map? json, bool consumeMap)
-      : this._json = consumeMap ? Map.from(json!) : json,
-        this._consumeMap = consumeMap;
-
-  List<T> list<T>(String fieldName, [Converter<T>? create]) {
-    final List? l = _getField(fieldName);
-    return l != null ? l.map(_converter(create)).toList(growable: false) : [];
+  List<T> list<T>(String fieldName, [Converter<T, List<T>>? create]) {
+    final l = _getField(fieldName) as List?;
+    return l != null
+        ? l.map((v) => converter(create)).toList(growable: false) as List<T>
+        : <T>[];
   }
 
-  T? single<T>(String fieldName, [T create(i)?]) {
-    final j = _getField(fieldName);
-    return j != null ? _converter(create)(j) : null;
+  T? single<T, V>(String fieldName, [Create<T, V>? create]) {
+    final j = _getField(fieldName) as V?;
+    return j != null ? converter<T, V>(create)(j) : null;
   }
 
-  Map<K, V> mapValues<K, V>(String fieldName,
-      [Converter<V>? convertValue, Converter<K>? convertKey]) {
-    final Map? m = _getField(fieldName);
+  Map<String, DependencyReference> getReferences(String fieldName) {
+    final dependencies = _getField(fieldName) as Json?;
+
+    if (dependencies == null) {
+      return {};
+    }
+
+    final map = <String, DependencyReference>{};
+    for (final key in dependencies.keys) {
+      final reference = DependencyReference.fromJson(dependencies[key]);
+      map.putIfAbsent(key, () => reference);
+    }
+    return map;
+  }
+
+  Map<K, DependencyReference> mapValues<K>(String fieldName,
+      [Converter<K, DependencyReference>? convertValue,
+      Converter<K, DependencyReference>? convertKey]) {
+    final m = _getField(fieldName) as Map<K, DependencyReference>?;
 
     if (m == null) {
       return {};
     }
 
-    Converter<K> _convertKey = _converter(convertKey);
-    Converter<V> _convertValue = _converter(convertValue);
+    final _convertKey = converter(convertKey);
+    final _convertValue = converter(convertValue);
 
-    Map<K, V> result = Map<K, V>();
+    final result = <K, DependencyReference>{};
     m.forEach((k, v) {
-      result[_convertKey(k)] = _convertValue(v);
+      result[_convertKey(k as DependencyReference)] =
+          _convertValue(v) as DependencyReference;
+    });
+
+    return result;
+  }
+
+  Map<K, V> mapEntries<K, V, T>(
+      String fieldName, V Function(K k, T v) convert) {
+    final m = _getField(fieldName) as Map<K, V>?;
+
+    if (m == null) {
+      return {};
+    }
+
+    final result = <K, V>{};
+    m.forEach((k, v) {
+      result[k] = convert(k, v as T);
     });
 
     return result;
   }
 
   T? _getField<T>(String fieldName) =>
-      (_consumeMap ? _json!.remove(fieldName) : _json![fieldName]);
+      (_consumeMap ? _json!.remove(fieldName) : _json![fieldName]) as T?;
 
-  Map? get unconsumed {
+  Json? get unconsumed {
     if (!_consumeMap) {
       throw StateError('unconsumed called on non consuming parser');
     }

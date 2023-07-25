@@ -1,16 +1,18 @@
 @Skip('not a real test')
-import 'dart:io';
+library;
 
+import 'package:dcli_core/dcli_core.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:pubspec/pubspec.dart';
-
+import 'package:pubspec2/pubspec2.dart';
 import 'package:test/test.dart';
 
-main() async {
-  final PubSpec pubSpec = PubSpec(name: 'fred', dependencies: {
-    'foo': PathReference('../foo'),
+void main() async {
+  final pubSpec = PubSpec(name: 'fred', dependencies: {
+    'foo': const PathReference('../foo'),
     'fred': HostedReference(VersionRange(min: Version(1, 2, 3)))
   });
 
-  await pubSpec.save(await Directory.systemTemp.createTemp('delme'));
+  await withTempDir((tempDir) async {
+    await pubSpec.save(tempDir);
+  });
 }
